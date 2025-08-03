@@ -1,87 +1,69 @@
-const chatBox = document.getElementById("chat-box");
-const chatForm = document.getElementById("chat-form");
-const userInput = document.getElementById("user-input");
+const form = document.getElementById("chat-form");
+const input = document.getElementById("user-input");
+const chatLog = document.getElementById("chat-log");
 const scrollBtn = document.getElementById("scroll-btn");
 
-let messages = [];
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const message = input.value.trim();
+  if (message === "") return;
 
-function addMessage(content, sender, typing = false) {
-  const msg = document.createElement("div");
-  msg.className = sender === "user" ? "user-message" : "bot-message";
-  if (typing) {
-    const span = document.createElement("span");
-    msg.appendChild(span);
-    chatBox.appendChild(msg);
-    return span;
-  } else {
-    msg.textContent = content;
-    chatBox.appendChild(msg);
-    chatBox.scrollTop = chatBox.scrollHeight;
+  addMessage("user", message);
+  input.value = "";
+  input.focus();
+
+  const botElement = addMessage("bot", "Valoran piše");
+  botElement.classList.add("typing");
+
+  const response = await fetch("/.netlify/functions/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message })
+  });
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder("utf-8");
+  let botMsg = "";
+  botElement.classList.remove("typing");
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value);
+    botMsg += chunk;
+    botElement.textContent = botMsg;
+    scrollToBottom();
   }
-}
 
-function showTypingIndicator() {
-  const typing = document.createElement("div");
-  typing.id = "typing-indicator";
-  typing.className = "bot-message";
-  typing.textContent = "Valoran piše...";
-  chatBox.appendChild(typing);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
+  input.focus();
+});
 
-function removeTypingIndicator() {
-  const typing = document.getElementById("typing-indicator");
-  if (typing) typing.remove();
+function addMessage(role, text) {
+  const div = document.createElement("div");
+  div.className = `message ${role}-message fade-in`;
+  div.textContent = text;
+  chatLog.appendChild(div);
+  scrollToBottom();
+  return div;
 }
 
 function scrollToBottom() {
-  chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: "smooth" });
+  chatLog.scrollTop = chatLog.scrollHeight;
 }
 
-chatBox.addEventListener("scroll", () => {
-  scrollBtn.style.display = chatBox.scrollTop < chatBox.scrollHeight - 300 ? "block" : "none";
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 100) {
+    scrollBtn.style.display = "block";
+  } else {
+    scrollBtn.style.display = "none";
+  }
 });
 
-chatForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const input = userInput.value.trim();
-  if (!input) return;
-
-  addMessage(input, "user");
-  userInput.value = "";
-  messages.push({ role: "user", content: input });
-
-  showTypingIndicator();
-
-  try {
-    const res = await fetch("/.netlify/functions/chat", {
-      method: "POST",
-      body: JSON.stringify({ messages }),
-    });
-
-    const reply = await res.text();
-    removeTypingIndicator();
-
-    const span = addMessage("", "bot", true);
-    let words = reply.split(" ");
-    let i = 0;
-
-    function typeNextWord() {
-      if (i < words.length) {
-        span.textContent += (i > 0 ? " " : "") + words[i];
-        chatBox.scrollTop = chatBox.scrollHeight;
-        i++;
-        setTimeout(typeNextWord, 80); // hitrost
-      } else {
-        messages.push({ role: "assistant", content: reply });
-      }
-    }
-
-    typeNextWord();
-  } catch (err) {
-    removeTypingIndicator();
-    addMessage("Napaka pri komunikaciji z Valoranom.", "bot");
-    console.error(err);
+// Enter = send, Shift+Enter = newline
+input.addEventListener("keydown", function (e) {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    form.dispatchEvent(new Event("submit"));
   }
 });
 
