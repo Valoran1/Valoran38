@@ -15,7 +15,7 @@ body {
 }
 
 .logo {
-  width: 240px;
+  width: 220px;
   filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.05));
 }
 
@@ -26,8 +26,8 @@ body {
   border-radius: 12px;
   padding: 20px;
   box-sizing: border-box;
-  position: relative;
   min-height: 500px;
+  position: relative;
 }
 
 #chat-log {
@@ -47,6 +47,7 @@ body {
   font-size: 16px;
   line-height: 1.5;
   word-break: break-word;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 .user-message {
@@ -67,7 +68,7 @@ body {
   align-items: center;
 }
 
-.chat-form input {
+.chat-form textarea {
   flex: 1;
   padding: 14px 20px;
   font-size: 16px;
@@ -78,6 +79,9 @@ body {
   outline: none;
   resize: none;
   min-height: 50px;
+  max-height: 120px;
+  line-height: 1.4;
+  overflow-y: auto;
 }
 
 .chat-form button {
@@ -118,10 +122,6 @@ body {
 
 #scroll-btn:hover {
   transform: scale(1.1);
-}
-
-.fade-in {
-  animation: fadeIn 0.3s ease-in-out;
 }
 
 @keyframes fadeIn {
