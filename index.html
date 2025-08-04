@@ -14,19 +14,14 @@
   <div id="chat-container">
     <div id="chat-log"></div>
     <form id="chat-form" class="chat-form">
-      <input id="user-input" type="text" placeholder="Vprašaj nekaj..." autocomplete="off" required />
-      <button type="submit">➤</button>
+      <textarea id="user-input" placeholder="Vprašaj nekaj..." rows="1" required></textarea>
+      <button type="submit" id="send-btn">➤</button>
     </form>
   </div>
 
   <button id="scroll-btn" onclick="scrollToBottom()">↓</button>
 
   <script src="script.js"></script>
-  <script>
-    window.onload = () => {
-      document.getElementById("user-input").focus();
-    };
-  </script>
 </body>
 </html>
 
