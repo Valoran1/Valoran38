@@ -13,7 +13,7 @@ form.addEventListener("submit", async (e) => {
   input.value = "";
   input.focus();
 
-  const botElement = addMessage("bot", "Valoran piše...");
+  const botElement = addMessage("bot", ""); // brez začetnega besedila
   botElement.classList.add("typing");
 
   const response = await fetch("/.netlify/functions/chat", {
@@ -56,11 +56,7 @@ function scrollToBottom() {
 
 // Scroll gumb prikaz
 window.addEventListener("scroll", () => {
-  if (window.scrollY > 100) {
-    scrollBtn.style.display = "block";
-  } else {
-    scrollBtn.style.display = "none";
-  }
+  scrollBtn.style.display = window.scrollY > 100 ? "block" : "none";
 });
 
 // Shift+Enter za novo vrstico, Enter za pošiljanje
