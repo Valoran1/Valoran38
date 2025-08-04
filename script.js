@@ -3,6 +3,7 @@ const input = document.getElementById("user-input");
 const chatLog = document.getElementById("chat-log");
 const scrollBtn = document.getElementById("scroll-btn");
 
+// Pošlji vprašanje
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const message = input.value.trim();
@@ -12,7 +13,7 @@ form.addEventListener("submit", async (e) => {
   input.value = "";
   input.focus();
 
-  const botElement = addMessage("bot", "Valoran piše");
+  const botElement = addMessage("bot", "Valoran piše...");
   botElement.classList.add("typing");
 
   const response = await fetch("/.netlify/functions/chat", {
@@ -38,6 +39,7 @@ form.addEventListener("submit", async (e) => {
   input.focus();
 });
 
+// Dodaj sporočilo
 function addMessage(role, text) {
   const div = document.createElement("div");
   div.className = `message ${role}-message fade-in`;
@@ -47,10 +49,12 @@ function addMessage(role, text) {
   return div;
 }
 
+// Scroll to bottom
 function scrollToBottom() {
   chatLog.scrollTop = chatLog.scrollHeight;
 }
 
+// Scroll gumb prikaz
 window.addEventListener("scroll", () => {
   if (window.scrollY > 100) {
     scrollBtn.style.display = "block";
@@ -59,13 +63,14 @@ window.addEventListener("scroll", () => {
   }
 });
 
-// Enter = send, Shift+Enter = newline
+// Shift+Enter za novo vrstico, Enter za pošiljanje
 input.addEventListener("keydown", function (e) {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
     form.dispatchEvent(new Event("submit"));
   }
 });
+
 
 
 
